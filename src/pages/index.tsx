@@ -5,6 +5,29 @@ import Link from "next/link";
 
 import { api } from "~/utils/api";
 
+const CreatePostWizard = () => {
+  const { user } = useUser();
+
+  console.log(user);
+
+  if (!user) return null;
+
+  return (
+    <div className="flex w-full gap-2">
+      <img
+        src={user.profileImageUrl}
+        alt="User's Profile Image"
+        className=" h-14 w-14 rounded-full"
+      />
+
+      <input
+        className="grow bg-inherit outline-none"
+        placeholder="Type some emojis!"
+      />
+    </div>
+  );
+};
+
 const Home: NextPage = () => {
   // const hello = api.example.hello.useQuery({ text: "from tRPC" });
 
@@ -33,13 +56,13 @@ const Home: NextPage = () => {
       <main className="flex h-screen justify-center">
         <div className=" w-full  border-x border-s-slate-400 md:max-w-2xl">
           <div className="flex border-b border-slate-400 p-4">
-            {user.isSignedIn ? <SignOutButton /> : <SignInButton />}
+            {user.isSignedIn ? <CreatePostWizard /> : <SignInButton />}
           </div>
 
           <div>
-            {[...posts, ...posts]?.map((post) => (
+            {posts?.map(({ post, author }) => (
               <div key={post.id} className=" border-b border-slate-400 p-8 ">
-                {post.content}
+                {post.content} -- {author?.username}
               </div>
             ))}
           </div>
