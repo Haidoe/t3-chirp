@@ -6,11 +6,13 @@ import Link from "next/link";
 import { api } from "~/utils/api";
 
 const Home: NextPage = () => {
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
+  // const hello = api.example.hello.useQuery({ text: "from tRPC" });
 
   const user = useUser();
 
-  console.log(user);
+  const { data: posts } = api.posts.getAll.useQuery();
+
+  console.log(posts);
 
   return (
     <>
@@ -28,9 +30,10 @@ const Home: NextPage = () => {
           {user.isSignedIn ? <SignOutButton /> : <SignInButton />}
         </div>
 
-        <div className="text-white">
-          {hello.data ? hello.data.greeting : "Loading..."}
-        </div>
+        <h2>Posts:</h2>
+        {posts?.map((post) => (
+          <div key={post.id}>{post.content}</div>
+        ))}
       </main>
     </>
   );
