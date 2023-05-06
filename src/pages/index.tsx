@@ -1,4 +1,4 @@
-import { SignInButton, useUser } from "@clerk/nextjs";
+import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
@@ -23,8 +23,9 @@ const Home: NextPage = () => {
         <div className="text-white">
           {user.isLoaded ? user.user?.fullName : "Loading..."}
         </div>
+
         <div className="text-white">
-          <SignInButton />
+          {user.isSignedIn ? <SignOutButton /> : <SignInButton />}
         </div>
 
         <div className="text-white">
