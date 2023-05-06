@@ -3,7 +3,7 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 
-import { api } from "~/utils/api";
+import { RouterOutputs, api } from "~/utils/api";
 
 const CreatePostWizard = () => {
   const { user } = useUser();
@@ -24,6 +24,34 @@ const CreatePostWizard = () => {
         className="grow bg-inherit outline-none"
         placeholder="Type some emojis!"
       />
+    </div>
+  );
+};
+
+type PostWithUser = RouterOutputs["posts"]["getAll"][number];
+
+const PostView = (props: PostWithUser) => {
+  const { post, author } = props;
+
+  console.log(author);
+
+  return (
+    <div key={post.id} className=" flex gap-2 border-b border-slate-400 p-4">
+      <img
+        src={author.profileImageUrl}
+        alt="Image of the Author"
+        className="h-14 w-14 rounded-full"
+      />
+
+      <div className="flex flex-col">
+        <div>
+          <span>{`@${author.username}`}</span>
+        </div>
+
+        <div>
+          <span>{post.content}</span>
+        </div>
+      </div>
     </div>
   );
 };
@@ -60,10 +88,8 @@ const Home: NextPage = () => {
           </div>
 
           <div>
-            {posts?.map(({ post, author }) => (
-              <div key={post.id} className=" border-b border-slate-400 p-8 ">
-                {post.content} -- {author?.username}
-              </div>
+            {posts?.map((fullPost) => (
+              <PostView {...fullPost} key={fullPost.post.id} />
             ))}
           </div>
         </div>
