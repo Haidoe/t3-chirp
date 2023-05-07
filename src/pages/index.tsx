@@ -9,6 +9,7 @@ import type { RouterOutputs } from "~/utils/api";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { LoadingPage } from "~/components/loading";
 
 dayjs.extend(relativeTime);
 
@@ -67,22 +68,33 @@ const PostView = (props: PostWithUser) => {
   );
 };
 
+const Feed = () => {
+  const { data: posts, isLoading: postsLoading } = api.posts.getAll.useQuery();
+
+  if (postsLoading) return <LoadingPage />;
+
+  if (!posts) return <div> Something went wrong... </div>;
+
+  return (
+    <div>
+      {posts?.map((fullPost) => (
+        <PostView {...fullPost} key={fullPost.post.id} />
+      ))}
+    </div>
+  );
+};
+
 const Home: NextPage = () => {
   // const hello = api.example.hello.useQuery({ text: "from tRPC" });
 
-  const user = useUser();
+  const { isLoaded: userLoaded, isSignedIn } = useUser();
 
-  const { data: posts, isLoading } = api.posts.getAll.useQuery();
+  //Start fetching ASAP --- this is react query
+  api.posts.getAll.useQuery();
 
-  if (isLoading) {
-    return <div>Loading..........</div>;
+  if (!userLoaded) {
+    return <LoadingPage />;
   }
-
-  if (!posts) {
-    return <div> Something went wrong! 🥺 </div>;
-  }
-
-  console.log(posts);
 
   return (
     <>
@@ -93,15 +105,13 @@ const Home: NextPage = () => {
       </Head>
 
       <main className="flex h-screen justify-center">
-        <div className=" w-full  border-x border-s-slate-400 md:max-w-2xl">
+        <div className=" flex w-full flex-col  border-x border-s-slate-400 md:max-w-2xl">
           <div className="flex border-b border-slate-400 p-4">
-            {user.isSignedIn ? <CreatePostWizard /> : <SignInButton />}
+            {isSignedIn ? <CreatePostWizard /> : <SignInButton />}
           </div>
 
-          <div>
-            {posts?.map((fullPost) => (
-              <PostView {...fullPost} key={fullPost.post.id} />
-            ))}
+          <div className="relative grow">
+            <Feed />
           </div>
         </div>
       </main>
