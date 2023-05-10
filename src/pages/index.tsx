@@ -9,7 +9,7 @@ import type { RouterOutputs } from "~/utils/api";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { LoadingPage } from "~/components/loading";
+import LoadingSpinner, { LoadingPage } from "~/components/loading";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
@@ -53,11 +53,31 @@ const CreatePostWizard = () => {
         type="text"
         value={input}
         onChange={(e) => setInput(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+
+            if (input !== "") {
+              mutate({
+                content: input,
+              });
+            }
+          }
+        }}
+        disabled={isPosting}
       />
 
-      <button onClick={() => mutate({ content: input })}>
-        {isPosting ? "🌀" : "Post"}
-      </button>
+      {input !== "" && (
+        <button onClick={() => mutate({ content: input })} disabled={isPosting}>
+          {isPosting ? (
+            <div>
+              <LoadingSpinner size={20} />
+            </div>
+          ) : (
+            "Post"
+          )}
+        </button>
+      )}
     </div>
   );
 };
