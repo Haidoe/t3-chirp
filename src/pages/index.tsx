@@ -12,6 +12,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import LoadingSpinner, { LoadingPage } from "~/components/loading";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { PageLayout } from "~/components/layout";
 
 dayjs.extend(relativeTime);
 
@@ -145,17 +146,15 @@ const Home: NextPage = () => {
 
   return (
     <>
-      <main className="flex h-screen justify-center">
-        <div className=" flex w-full flex-col  border-x border-s-slate-400 md:max-w-2xl">
-          <div className="flex border-b border-slate-400 p-4">
-            {isSignedIn ? <CreatePostWizard /> : <SignInButton />}
-          </div>
-
-          <div className="relative grow">
-            <Feed />
-          </div>
+      <PageLayout>
+        <div className="flex border-b border-slate-400 p-4">
+          {isSignedIn ? <CreatePostWizard /> : <SignInButton />}
         </div>
-      </main>
+
+        <div className="relative grow">
+          <Feed />
+        </div>
+      </PageLayout>
     </>
   );
 };
