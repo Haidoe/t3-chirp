@@ -1,12 +1,29 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
-import Link from "next/link";
 import { PageLayout } from "~/components/layout";
-
 import { LoadingPage } from "~/components/loading";
-
+import PostView from "~/components/postview";
 import { api } from "~/utils/api";
+
+const ProfileFeed = (props: { userId: string }) => {
+  const { data, isLoading } = api.posts.getPostsByUserId.useQuery({
+    userId: props.userId,
+  });
+
+  if (isLoading) return <LoadingPage />;
+
+  if (!data || data?.length === 0) return <div> No post from user. </div>;
+
+  return (
+    <div className="relative grow">
+      {data.map((fullPost) => (
+        <PostView {...fullPost} key={fullPost.post.id} />
+      ))}
+      ;
+    </div>
+  );
+};
 
 const ProfilePage: NextPage = () => {
   const { data, isLoading } = api.profile.getUserByUsername.useQuery({
@@ -39,6 +56,8 @@ const ProfilePage: NextPage = () => {
         <div className="p-4 text-2xl font-bold">@{data.username}</div>
 
         <div className="border-b border-slate-400"></div>
+
+        <ProfileFeed userId={data.id} />
       </PageLayout>
     </>
   );
